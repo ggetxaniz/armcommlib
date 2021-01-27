@@ -6,9 +6,6 @@
 #include <stdint.h>
 #include <unistd.h>
 
-#include "aes_encrypt.h"
-#include "aes_decrypt.h"
-
 #include "armcommlib.h"
 
 uint8_t *encrypt(char *message, int mode, int size, uint8_t *key){

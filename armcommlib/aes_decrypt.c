@@ -4,24 +4,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
-#define operation_result_t  armv8_operation_result_t
 
-#define cipher_mode_t       armv8_cipher_mode_t
 #define operation_result_t  armv8_operation_result_t
-#define doubleword_t        armv8_doubleword_t
 #define quadword_t          armv8_quadword_t
 #define cipher_constants_t  armv8_cipher_constants_t
 #define cipher_state_t      armv8_cipher_state_t
 
 #define aes_gcm_set_counter             armv8_aes_gcm_set_counter
-#define encrypt_full                    armv8_enc_aes_gcm_full
 #define encrypt_from_state              armv8_enc_aes_gcm_from_state
-#define encrypt_from_constants_IPsec    armv8_enc_aes_gcm_from_constants_IPsec
-#define decrypt_full                    armv8_dec_aes_gcm_full
 #define decrypt_from_state              armv8_dec_aes_gcm_from_state
-#define decrypt_from_constants_IPsec    armv8_dec_aes_gcm_from_constants_IPsec
-
-#include "aes_decrypt.h"
 
 void de_aes_cbc_sha1(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_t *key)
 {
