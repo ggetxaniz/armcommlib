@@ -54,7 +54,7 @@ void de_aes_cbc_sha1(uint8_t *dec_val, uint8_t **plain_output)
 
 void de_aes_cbc_sha256(uint8_t *dec_val, uint8_t **plain_output)
 {
-    uint64_t block_byte_length = 128;
+    uint64_t block_byte_length = 16;
     uint8_t *auth;
     uint8_t key[16] = {0};
     uint8_t iv[16] = {0};

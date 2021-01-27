@@ -17,22 +17,14 @@ uint8_t *encrypt(char *message, int mode){
 
 // Mode election
 
-/*    if (mode != 0 || mode != 1 || mode != 2){
-        printf("\nEncrypt/decrypt mode must be 0, 1, or 2.\n 0 = aes_cbc_sha1\n 1 = aes_cbc_sha256\n 2 = aes_gcm\n");
-        return;
-    }
-*/
     switch (mode) {
         case 0:
-            printf("\nYou seleceted aes_cbc_sha1 encrypt mode\n");
             aes_encrypt = &en_aes_cbc_sha1;
             break;
         case 1:
-            printf("\nYou seleceted aes_cbc_sha256 encrypt mode\n");
             aes_encrypt = &en_aes_cbc_sha256;
             break;
         case 2:
-            printf("\nYou seleceted aes_gcm encrypt mode\n");
             aes_encrypt = &en_aes_gcm_state;
             break;
     }
@@ -40,7 +32,7 @@ uint8_t *encrypt(char *message, int mode){
 // Parameters
 
     int size;
-    uint8_t i = 0;
+    uint64_t i = 0;
     uint8_t *text;
     uint8_t *enc_result;
     uint64_t block;
@@ -57,10 +49,6 @@ uint8_t *encrypt(char *message, int mode){
         }
     }
 
-    printf("\nMessage size: %u",size);
-    printf("\nBlock quantity: %lu",block);
-    printf("\nPlaintext: %s\n",message);
-
     text = (uint8_t *)malloc((block*16)*sizeof(uint8_t));
     enc_result = (uint8_t *)malloc((block*16)*sizeof(uint8_t));
 
@@ -76,14 +64,6 @@ uint8_t *encrypt(char *message, int mode){
         i++;
     }
 
-// Print encryption
-
-    printf("\nEncryption: ");
-    for( i=0; i<size; i++) {
-        printf("%02x", enc_result[i]);
-    }
-    printf("\n");
-
     return enc_result;
 }
 
@@ -93,22 +73,14 @@ uint8_t *decrypt(uint8_t *enc_message, int mode){
 
 // Mode election
 
-/*    if (mode != 0 || mode != 1 || mode != 2){
-        printf("\nEncrypt/decrypt mode must be 0, 1, or 2.\n 0 = aes_cbc_sha1\n 1 = aes_cbc_sha256\n 2 = aes_gcm\n");
-        return;
-    }
-*/
     switch (mode) {
         case 0:
-            printf("\nYou seleceted aes_cbc_sha1 decrypt mode\n");
             aes_decrypt = &de_aes_cbc_sha1;
             break;
         case 1:
-            printf("\nYou seleceted aes_cbc_sha256 decrypt mode\n");
             aes_decrypt = &de_aes_cbc_sha256;
             break;
         case 2:
-            printf("\nYou seleceted aes_gcm decrypt mode\n");
             aes_decrypt = &de_aes_gcm_state;
             break;
     }
@@ -116,7 +88,7 @@ uint8_t *decrypt(uint8_t *enc_message, int mode){
 // Parameters
 
     int size;
-    uint8_t i = 0;
+    uint64_t i = 0;
     uint8_t *enc_text;
     uint8_t *dec_result;
     uint64_t block;
@@ -133,10 +105,6 @@ uint8_t *decrypt(uint8_t *enc_message, int mode){
         }
     }
 
-    printf("\nMessage size: %u",size);
-    printf("\nBlock quantity: %lu",block);
-    printf("\nEncrypt message: %02x\n",enc_message);
-
     enc_text = (uint8_t *)malloc((block*16)*sizeof(uint8_t));
     dec_result = (uint8_t *)malloc(size*sizeof(uint8_t));
 
@@ -151,13 +119,6 @@ uint8_t *decrypt(uint8_t *enc_message, int mode){
         aes_decrypt(&enc_text[i*16], &aux);
         i++;
     }
-
-// Print decryption function
-    printf("\nDecryption: ");
-    for( i=0; i<size; i++) {
-        printf("%c", dec_result[i]);
-    }
-    printf("\n");
 
     return dec_result;
 }
