@@ -11,9 +11,9 @@
 
 #include "armcommlib.h"
 
-uint8_t *encrypt(char *message, int mode){
+uint8_t *encrypt(char *message, int mode, int size, uint8_t *key){
 
-    void (*aes_encrypt)(uint8_t*, uint8_t**);
+    void (*aes_encrypt)(uint8_t*, uint8_t**, int, uint8_t*);
 
 // Mode election
 
@@ -31,7 +31,6 @@ uint8_t *encrypt(char *message, int mode){
 
 // Parameters
 
-    int size;
     uint64_t i = 0;
     uint8_t *text;
     uint8_t *enc_result;
@@ -40,7 +39,6 @@ uint8_t *encrypt(char *message, int mode){
 // Block quantityy
 
     block = 1;
-    size = strlen(message);
     if (size > 16){
         if (size%16 != 0){
             block = ((size/16)+1);
@@ -52,7 +50,7 @@ uint8_t *encrypt(char *message, int mode){
     text = (uint8_t *)malloc((block*16)*sizeof(uint8_t));
     enc_result = (uint8_t *)malloc((block*16)*sizeof(uint8_t));
 
-    strncpy(text, message, strlen(message));
+    strncpy(text, message, size);
 
 // Calls administration
 
@@ -60,16 +58,16 @@ uint8_t *encrypt(char *message, int mode){
 
     while(i<block){
         aux=&enc_result[i*16];
-        aes_encrypt(&text[i*16], &aux);
+        aes_encrypt(&text[i*16], &aux, size, key);
         i++;
     }
 
     return enc_result;
 }
 
-uint8_t *decrypt(uint8_t *enc_message, int mode){
+uint8_t *decrypt(uint8_t *enc_message, int mode, int size, uint8_t *key){
 
-    void (*aes_decrypt)(uint8_t*, uint8_t**);
+    void (*aes_decrypt)(uint8_t*, uint8_t**, int, uint8_t*);
 
 // Mode election
 
@@ -87,7 +85,6 @@ uint8_t *decrypt(uint8_t *enc_message, int mode){
 
 // Parameters
 
-    int size;
     uint64_t i = 0;
     uint8_t *enc_text;
     uint8_t *dec_result;
@@ -96,7 +93,6 @@ uint8_t *decrypt(uint8_t *enc_message, int mode){
 // Block quantityy
 
     block = 1;
-    size = strlen(enc_message);
     if (size > 16){
         if (size%16 != 0){
             block = ((size/16)+1);
@@ -106,9 +102,9 @@ uint8_t *decrypt(uint8_t *enc_message, int mode){
     }
 
     enc_text = (uint8_t *)malloc((block*16)*sizeof(uint8_t));
-    dec_result = (uint8_t *)malloc(size*sizeof(uint8_t));
+    dec_result = (uint8_t *)malloc((block*16)*sizeof(uint8_t));
 
-    strncpy(enc_text, enc_message, strlen(enc_message));
+    strncpy(enc_text, enc_message, size);
 
 // Calls administration
 
@@ -116,7 +112,7 @@ uint8_t *decrypt(uint8_t *enc_message, int mode){
 
     while(i<block){
         aux=&dec_result[i*16];
-        aes_decrypt(&enc_text[i*16], &aux);
+        aes_decrypt(&enc_text[i*16], &aux, size, key);
         i++;
     }
 

@@ -19,11 +19,10 @@
 
 #include "aes_encrypt.h"
 
-void en_aes_cbc_sha1(uint8_t *enc_val, uint8_t **cipher_output)
+void en_aes_cbc_sha1(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key)
 {
     uint64_t block_byte_length = 16;
     uint8_t *auth;
-    uint8_t key[16] = {0};
     uint8_t iv[16] = {0};
     uint8_t key_expanded[256] = {0};
 
@@ -49,11 +48,10 @@ void en_aes_cbc_sha1(uint8_t *enc_val, uint8_t **cipher_output)
 }
 
 
-void en_aes_cbc_sha256(uint8_t *enc_val, uint8_t **cipher_output)
+void en_aes_cbc_sha256(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key)
 {
     uint64_t block_byte_length = 16;
     uint8_t *auth;
-    uint8_t key[16] = {0};
     uint8_t iv[16] = {0};
     uint8_t key_expanded[256] = {0};
 
@@ -78,7 +76,7 @@ void en_aes_cbc_sha256(uint8_t *enc_val, uint8_t **cipher_output)
                 &arg);
 }
 
-void en_aes_gcm_state(uint8_t *enc_val, uint8_t **cipher_output)
+void en_aes_gcm_state(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key)
 {
 
     cipher_constants_t cc = { .mode = 0 };
@@ -87,12 +85,10 @@ void en_aes_gcm_state(uint8_t *enc_val, uint8_t **cipher_output)
 
 //    uint8_t reference_tag[16] = {0};
 
-    uint8_t key_length = 16;
-    uint8_t key[16] = {0};
 
-    uint8_t aad[16] = {0};
+    uint8_t aad[16] = {0}; // key
     uint64_t aad_length = 16;
-    uint64_t plaintext_length = 128;
+    uint64_t plaintext_length = size;
 
     quadword_t temp_counter = cs.counter;
     uint8_t tag[16] = {0};
