@@ -8,8 +8,7 @@ int main()
       uint8_t *enc_result, *dec_result;
       uint8_t key[16] = {0x10, 0xa5, 0x88, 0x69, 0xd7, 0x4b, 0xe5, 0xa3, 0x74, 0xcf, 0x86, 0x7c, 0xfb, 0x47, 0x38, 0x59};
       int i, size, correct;
-
-//      uint8_t key[16] = {0};
+      uint8_t *hash;
 
       size = strlen(message);
 
@@ -21,27 +20,32 @@ int main()
       enc_result = (uint8_t *)malloc(size*sizeof(uint8_t));
       dec_result = (uint8_t *)malloc(size*sizeof(uint8_t));
 
-      correct = encrypt(message,&enc_result,2,size,key);
+      encrypt(message,&enc_result,2,size,key,hash);
 
-      if (correct == 1){
-
-	  printf("\nEncryption: ");
-          for( i=0; i<size; i++) {
-              printf("%02x", enc_result[i]);
-          }
-          printf("\n");
+      printf("\nEncryption: ");
+      for( i=0; i<size; i++) {
+          printf("%02x", enc_result[i]);
       }
-
-      correct = decrypt(enc_result,&dec_result,2,size,key);
-
-      if (correct == 1){
-
-          printf("\nDecryption: ");
-          for( i=0; i<size; i++) {
-              printf("%c", dec_result[i]);
-          }
-          printf("\n");
+      printf("\n");
+      printf("\n Hash:");
+      for( i=0; i<size; i++) {
+          printf("%02x", hash[i]);
       }
+      printf("\n");
+
+      decrypt(enc_result,&dec_result,2,size,key,hash);
+
+
+      printf("\nDecryption: ");
+      for( i=0; i<size; i++) {
+          printf("%c", dec_result[i]);
+      }
+      printf("\n");
+      printf("\n Hash:");
+      for( i=0; i<size; i++) {
+          printf("%02x", hash[i]);
+      }
+      printf("\n");
 
       return 0;
 }

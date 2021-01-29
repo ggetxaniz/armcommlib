@@ -20,19 +20,19 @@
 #define encrypt_from_state              armv8_enc_aes_gcm_from_state
 #define decrypt_from_state              armv8_dec_aes_gcm_from_state
 
-uint8_t encrypt(uint8_t *message, uint8_t **enc_result, int mode, int size, uint8_t *key);
-uint8_t decrypt(uint8_t *message, uint8_t **dec_result, int mode, int size, uint8_t *key);
+uint8_t encrypt(uint8_t *message, uint8_t **enc_result, int mode, int size, uint8_t *key, uint8_t *hash);
+uint8_t decrypt(uint8_t *message, uint8_t **dec_result, int mode, int size, uint8_t *key, uint8_t *hash);
 
-void encrypt_file(uint8_t *plain_file, uint8_t **enc_result, int mode, uint8_t *key);
-void decrypt_file(uint8_t *enc_file, uint8_t **dec_result, int mode, uint8_t *key);
+void encrypt_file(uint8_t *plain_file, uint8_t **enc_result, int mode, uint8_t *key, uint8_t *hash);
+void decrypt_file(uint8_t *enc_file, uint8_t **dec_result, int mode, uint8_t *key, uint8_t *hash);
 
-void en_aes_cbc_sha1(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key);
-void de_aes_cbc_sha1(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_t *key);
+void en_aes_cbc_sha1(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key, uint8_t *hash);
+void de_aes_cbc_sha1(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_t *key, uint8_t *hash);
 
-void en_aes_cbc_sha256(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key);
-void de_aes_cbc_sha256(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_t *key);
+void en_aes_cbc_sha256(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key, uint8_t *hash);
+void de_aes_cbc_sha256(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_t *key, uint8_t *hash);
 
-void en_aes_gcm_state(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key);
-void de_aes_gcm_state(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_t *key);
+void en_aes_gcm_state(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key, uint8_t *hash);
+void de_aes_gcm_state(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_t *key, uint8_t *hash);
 
 #endif

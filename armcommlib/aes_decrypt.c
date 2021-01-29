@@ -14,7 +14,7 @@
 #define encrypt_from_state              armv8_enc_aes_gcm_from_state
 #define decrypt_from_state              armv8_dec_aes_gcm_from_state
 
-void de_aes_cbc_sha1(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_t *key)
+void de_aes_cbc_sha1(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_t *key, uint8_t *hash)
 {
     uint64_t block_byte_length = 16;
     uint8_t *auth;
@@ -40,10 +40,11 @@ void de_aes_cbc_sha1(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_t
                 dec_val, *plain_output, block_byte_length,
                 *plain_output, auth, block_byte_length,
                 &arg);
+    hash = auth;
     free(auth);
 }
 
-void de_aes_cbc_sha256(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_t *key)
+void de_aes_cbc_sha256(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_t *key, uint8_t *hash)
 {
     uint64_t block_byte_length = 16;
     uint8_t *auth;
@@ -68,10 +69,11 @@ void de_aes_cbc_sha256(uint8_t *dec_val, uint8_t **plain_output, int size, uint8
                 dec_val, *plain_output, block_byte_length,
                 *plain_output, auth, block_byte_length,
                 &arg);
+    hash = auth;
     free(auth);
 }
 
-void de_aes_gcm_state(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_t *key)
+void de_aes_gcm_state(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_t *key, uint8_t *hash)
 {
 
     cipher_constants_t cc = { .mode = 0 };

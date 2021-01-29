@@ -8,9 +8,9 @@
 
 #include "armcommlib.h"
 
-uint8_t encrypt(uint8_t *message, uint8_t** enc_result, int mode, int size, uint8_t *key){
+uint8_t encrypt(uint8_t *message, uint8_t** enc_result, int mode, int size, uint8_t *key, uint8_t *hash){
 
-    void (*aes_encrypt)(uint8_t*, uint8_t**, int, uint8_t*);
+    void (*aes_encrypt)(uint8_t*, uint8_t**, int, uint8_t*, uint8_t*);
 
 // Mode election
 
@@ -67,7 +67,7 @@ uint8_t encrypt(uint8_t *message, uint8_t** enc_result, int mode, int size, uint
 
     while(i<block){
         aux=&aux_result[i*16];
-        aes_encrypt(&text[i*16], &aux, size, key);
+        aes_encrypt(&text[i*16], &aux, size, key, hash);
         i++;
     }
     memcpy(*enc_result, aux_result, size);
@@ -76,9 +76,9 @@ uint8_t encrypt(uint8_t *message, uint8_t** enc_result, int mode, int size, uint
     return(1);
 }
 
-uint8_t decrypt(uint8_t *enc_message, uint8_t **dec_result, int mode, int size, uint8_t *key){
+uint8_t decrypt(uint8_t *enc_message, uint8_t **dec_result, int mode, int size, uint8_t *key, uint8_t *hash){
 
-    void (*aes_decrypt)(uint8_t*, uint8_t**, int, uint8_t*);
+    void (*aes_decrypt)(uint8_t*, uint8_t**, int, uint8_t*, uint8_t*);
 
 // Mode election
 
@@ -135,18 +135,18 @@ uint8_t decrypt(uint8_t *enc_message, uint8_t **dec_result, int mode, int size, 
 
     while(i<block){
         aux=&aux_result[i*16];
-        aes_decrypt(&enc_text[i*16], &aux, size, key);
+        aes_decrypt(&enc_text[i*16], &aux, size, key, hash);
         i++;
     }
     memcpy(*dec_result, aux_result, size);
     free(aux_result);
     free(enc_text);
-    return(1);
+    return (1);
 }
+/*
+void encrypt_file(uint8_t *plain_file, uint8_t** enc_result, int mode, uint8_t *key, uint8_t hash){
 
-void encrypt_file(uint8_t *plain_file, uint8_t** enc_result, int mode, uint8_t *key){
-
-    void (*aes_encrypt)(uint8_t*, uint8_t**, int, uint8_t*);
+    void (*aes_encrypt)(uint8_t*, uint8_t**, int, uint8_t*, uint8_t);
 
 // Mode election
 
@@ -201,7 +201,7 @@ void encrypt_file(uint8_t *plain_file, uint8_t** enc_result, int mode, uint8_t *
 
         while(i<block){
         	aux=&enc_result2[i*16];
-        	aes_encrypt(&buffer[i*16], &aux, size, key);
+        	aes_encrypt(&buffer[i*16], &aux, size, key, hash);
         	fprintf(file, "%02x", aux[i*16]);
         	i++;
     	}
@@ -212,9 +212,9 @@ void encrypt_file(uint8_t *plain_file, uint8_t** enc_result, int mode, uint8_t *
 }
 
 
-void decrypt_file(uint8_t *enc_file, uint8_t **dec_result, int mode, uint8_t *key){
+void decrypt_file(uint8_t *enc_file, uint8_t **dec_result, int mode, uint8_t *key, uint8_t hash){
 
-    void (*aes_decrypt)(uint8_t*, uint8_t**, int, uint8_t*);
+    void (*aes_decrypt)(uint8_t*, uint8_t**, int, uint8_t*, uint8_t);
 
 // Mode election
 
@@ -270,7 +270,7 @@ void decrypt_file(uint8_t *enc_file, uint8_t **dec_result, int mode, uint8_t *ke
 
     	while(i<block){
         	aux=&dec_result2[i*16];
-        	aes_decrypt(&enc_text[i*16], &aux, size, key);
+        	aes_decrypt(&enc_text[i*16], &aux, size, key, hash);
         	fprintf(file, "%c", aux[i*16]);
         	i++;
     	}
@@ -281,3 +281,4 @@ void decrypt_file(uint8_t *enc_file, uint8_t **dec_result, int mode, uint8_t *ke
     }
 
 }
+*/
