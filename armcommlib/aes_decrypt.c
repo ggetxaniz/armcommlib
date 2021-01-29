@@ -40,6 +40,7 @@ void de_aes_cbc_sha1(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_t
                 dec_val, *plain_output, block_byte_length,
                 *plain_output, auth, block_byte_length,
                 &arg);
+    free(auth);
 }
 
 void de_aes_cbc_sha256(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_t *key)
@@ -61,13 +62,13 @@ void de_aes_cbc_sha256(uint8_t *dec_val, uint8_t **plain_output, int size, uint8
 
     arg.cipher.key = key_expanded;
     arg.cipher.iv = iv;
-
     //// Get reference input file name
 
     operation_result_t decrypt_result = armv8_dec_aes_cbc_sha256_128(
                 dec_val, *plain_output, block_byte_length,
                 *plain_output, auth, block_byte_length,
                 &arg);
+    free(auth);
 }
 
 void de_aes_gcm_state(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_t *key)
@@ -77,9 +78,8 @@ void de_aes_gcm_state(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_
     cipher_state_t cs = { .counter = { .d = {0,0} } };
     cs.constants = &cc;
 
-//    uint8_t reference_tag[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 
-    uint8_t aad[16] = {0}; // key
+    uint8_t aad[16] = {0};
     uint64_t aad_length = 16;
     uint64_t plaintext_length = size;
 
@@ -88,15 +88,6 @@ void de_aes_gcm_state(uint8_t *dec_val, uint8_t **plain_output, int size, uint8_
 
     cs.current_tag.d[0] = 0;
     cs.current_tag.d[1] = 0;
-
-    // Encryption done in place, need to copy reference to output
-//    memcpy(*plain_output, dec_val, plaintext_byte_length);
-
-    // IPsec encrypt requires aad to be zero padded
-//    uint8_t zero_padded_aad[16] = { 0 };
-//    memcpy(zero_padded_aad, aad, aad_length>>3);
-
-//    tag = (uint8_t *)malloc(cs.constants->tag_byte_length);
 
     operation_result_t decrypt_result = decrypt_from_state(
             &cs,

@@ -41,6 +41,7 @@ void en_aes_cbc_sha1(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_
                 enc_val, *cipher_output, block_byte_length,
                 enc_val, auth, block_byte_length,
                 &arg);
+    free(auth);
 }
 
 
@@ -70,6 +71,7 @@ void en_aes_cbc_sha256(uint8_t *enc_val, uint8_t **cipher_output, int size, uint
                 enc_val, *cipher_output, block_byte_length,
                 enc_val, auth, block_byte_length,
                 &arg);
+    free(auth);
 }
 
 void en_aes_gcm_state(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key)
@@ -79,10 +81,7 @@ void en_aes_gcm_state(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8
     cipher_state_t cs = { .counter = { .d = {0,0} } };
     cs.constants = &cc;
 
-//    uint8_t reference_tag[16] = {0};
-
-
-    uint8_t aad[16] = {0}; // key
+    uint8_t aad[16] = {0};
     uint64_t aad_length = 16;
     uint64_t plaintext_length = size;
 
@@ -91,15 +90,6 @@ void en_aes_gcm_state(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8
 
     cs.current_tag.d[0] = 0;
     cs.current_tag.d[1] = 0;
-
-    // Encryption done in place, need to copy reference to output
-//    memcpy(*cipher_output, enc_val, plaintext_byte_length);
-
-    // IPsec encrypt requires aad to be zero padded
-//    uint8_t zero_padded_aad[16] = { 0 };
-//    memcpy(zero_padded_aad, aad, aad_length>>3);
-
-//    tag = (uint8_t *)malloc(cs.constants->tag_byte_length);
 
     operation_result_t encrypt_result = encrypt_from_state(
             &cs,
