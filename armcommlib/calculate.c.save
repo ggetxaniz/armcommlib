@@ -14,16 +14,12 @@ uint8_t encrypt(uint8_t *message, uint8_t** enc_result, int mode, int size, uint
 
 // Mode election
 
-    if (size == 0){
-	return(0);
+    if(size == 0){
+	return (0);
     }
-/*
-    if (strlen(key) != 16){
-        return(0);
-    }
-*/
-    if (mode < 0 || mode > 2){
-        return(0);
+
+    if (mode <0){
+
     }else{
 	switch (mode) {
             case 0:
@@ -42,7 +38,7 @@ uint8_t encrypt(uint8_t *message, uint8_t** enc_result, int mode, int size, uint
 
     uint64_t i = 0;
     uint8_t *text;
-    uint8_t *aux_result;
+    uint8_t *enc_result2;
     uint64_t block;
 
 // Block quantityy
@@ -57,7 +53,7 @@ uint8_t encrypt(uint8_t *message, uint8_t** enc_result, int mode, int size, uint
     }
 
     text = (uint8_t *)malloc((block*16)*sizeof(uint8_t));
-    aux_result = (uint8_t *)malloc((block*16)*sizeof(uint8_t));
+    enc_result2 = (uint8_t *)malloc((block*16)*sizeof(uint8_t));
 
     memcpy(text, message, size);
 
@@ -66,12 +62,12 @@ uint8_t encrypt(uint8_t *message, uint8_t** enc_result, int mode, int size, uint
     uint8_t *aux;
 
     while(i<block){
-        aux=&aux_result[i*16];
+        aux=&enc_result2[i*16];
         aes_encrypt(&text[i*16], &aux, size, key);
         i++;
     }
-    memcpy(*enc_result, aux_result, size);
-    free(aux_result);
+    memcpy(*enc_result, enc_result2, size);
+    free(enc_result2);
     free(text);
     return(1);
 }
@@ -82,35 +78,23 @@ uint8_t decrypt(uint8_t *enc_message, uint8_t **dec_result, int mode, int size, 
 
 // Mode election
 
-    if (size <= 0){
-        return(0);
-    }
-/*
-    if (strlen(key) != 16){
-        return(0);
-    }
-*/
-    if (mode < 0 || mode > 2){
-        return(0);
-    }else{
-        switch (mode) {
-            case 0:
-                aes_decrypt = &de_aes_cbc_sha1;
-                break;
-            case 1:
-                aes_decrypt = &de_aes_cbc_sha256;
-                break;
-            case 2:
-                aes_decrypt = &de_aes_gcm_state;
-                break;
-        }
+    switch (mode) {
+        case 0:
+            aes_decrypt = &de_aes_cbc_sha1;
+            break;
+        case 1:
+            aes_decrypt = &de_aes_cbc_sha256;
+            break;
+        case 2:
+            aes_decrypt = &de_aes_gcm_state;
+            break;
     }
 
 // Parameters
 
     uint64_t i = 0;
     uint8_t *enc_text;
-    uint8_t *aux_result;
+    uint8_t *dec_result2;
     uint64_t block;
 
 // Block quantityy
@@ -124,22 +108,34 @@ uint8_t decrypt(uint8_t *enc_message, uint8_t **dec_result, int mode, int size, 
         }
     }
 
+    //  for( i=0; i<size; i++) {
+//	                printf("%02x", enc_message[i]);
+//			      }
+            printf("\n");
+
+
+//printf("Block %lu %lu %lu \n", block, block*16,size  );
     enc_text = (uint8_t *)malloc((block*16)*sizeof(uint8_t));
-    aux_result = (uint8_t *)malloc((block*16)*sizeof(uint8_t));
+    dec_result2 = (uint8_t *)malloc((block*16)*sizeof(uint8_t));
 
     memcpy(enc_text, enc_message, size);
+//for( i=0; i<size; i++) {
+//	                printf("%02x", enc_text[i]);
+//			      }
+  //          printf("\n");
+
 
 // Calls administration
 
     uint8_t *aux;
 
     while(i<block){
-        aux=&aux_result[i*16];
+        aux=&dec_result2[i*16];
         aes_decrypt(&enc_text[i*16], &aux, size, key);
         i++;
     }
-    memcpy(*dec_result, aux_result, size);
-    free(aux_result);
+    memcpy(*dec_result, dec_result2, size);
+    free(dec_result2);
     free(enc_text);
     return(1);
 }

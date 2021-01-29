@@ -13,7 +13,7 @@ int main()
 
       size = strlen(message);
 
-      printf("\nSize: %u",size);
+      printf("\nText size: %u",size);
 
       printf("\nPlaintext: %s",message);
       printf("\n");
