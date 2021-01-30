@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
           size = ftell (file);
       }
 
-      plain_file = (uint8_t *)argv[1];
+      strncpy(plain_file, argv[1], strlen(argv[1]));
 
       printf("Size of file: %u\n",size);
 
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
       encrypt_file(plain_file,&enc_result,0,key,&hash);
 
-      //decrypt_file(plain_file,&dec_result,0,key,hash);
+      decrypt_file(plain_file,&dec_result,0,key,&hash);
 
 
       free(hash);

@@ -19,6 +19,8 @@ int main(int argc , char *argv[])
         uint8_t key[16] = {0x10, 0xa5, 0x88, 0x69, 0xd7, 0x4b, 0xe5, 0xa3, 0x74, 0xcf, 0x86, 0x7c, 0xfb, 0x47, 0x38, 0x59};
         int size, i;
 
+        hash = (uint8_t *)malloc(16*sizeof(uint8_t));
+
 	//Create socket
 	sock = socket(AF_INET , SOCK_STREAM , 0);
 	if (sock == -1)
@@ -55,7 +57,7 @@ int main(int argc , char *argv[])
 
 		if (strncmp(message, "exit", 4) == 0) break;
 
-                encrypt(message,&enc_message,0,size,key,hash);
+                encrypt(message,&enc_message,0,size,key,&hash);
 
                 /*
                 size = strlen(enc_message);
@@ -83,7 +85,7 @@ int main(int argc , char *argv[])
 		}
 
 
-                decrypt(server_reply,&dec_message,0,read_size,key,hash);
+                decrypt(server_reply,&dec_message,0,read_size,key,&hash);
 		puts("Server reply: ");
 
                 for( i=0; i<read_size; i++) {
