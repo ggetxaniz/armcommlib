@@ -15,16 +15,16 @@
 #define decrypt_from_state              armv8_dec_aes_gcm_from_state
 
 
-void en_aes_cbc_sha1(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key, uint8_t *hash)
+void en_aes_cbc_sha1(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key, uint8_t **hash)
 {
     uint64_t block_byte_length = 16;
-    uint8_t *auth;
+//    uint8_t *auth;
     uint8_t iv[16] = {0};
     uint8_t key_expanded[256] = {0};
 
     armv8_cipher_digest_t arg;
 
-    auth = (uint8_t *)malloc(block_byte_length);
+//    auth = (uint8_t *)malloc(block_byte_length);
 
     arg.digest.hmac.key = key;
     arg.digest.hmac.i_key_pad = key;
@@ -39,23 +39,22 @@ void en_aes_cbc_sha1(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_
 
     operation_result_t encrypt_result = armv8_enc_aes_cbc_sha1_128(
                 enc_val, *cipher_output, block_byte_length,
-                enc_val, auth, block_byte_length,
+                enc_val, *hash, block_byte_length,
                 &arg);
-    hash = auth;
-    free(auth);
+//    free(auth);
 }
 
 
-void en_aes_cbc_sha256(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key, uint8_t *hash)
+void en_aes_cbc_sha256(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key, uint8_t **hash)
 {
     uint64_t block_byte_length = 16;
-    uint8_t *auth;
+//    uint8_t *auth;
     uint8_t iv[16] = {0};
     uint8_t key_expanded[256] = {0};
 
     armv8_cipher_digest_t arg;
 
-    auth = (uint8_t *)malloc(block_byte_length);
+//    auth = (uint8_t *)malloc(block_byte_length);
 
     arg.digest.hmac.key = key;
     arg.digest.hmac.i_key_pad = key;
@@ -70,13 +69,12 @@ void en_aes_cbc_sha256(uint8_t *enc_val, uint8_t **cipher_output, int size, uint
 
     operation_result_t encrypt_result = armv8_enc_aes_cbc_sha256_128(
                 enc_val, *cipher_output, block_byte_length,
-                enc_val, auth, block_byte_length,
+                enc_val, *hash, block_byte_length,
                 &arg);
-    hash = auth;
-    free(auth);
+//    free(auth);
 }
 
-void en_aes_gcm_state(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key, uint8_t *hash)
+void en_aes_gcm_state(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key, uint8_t **hash)
 {
 
     cipher_constants_t cc = { .mode = 0 };

@@ -1,19 +1,27 @@
 // SERVER using Sockets in C
 #include<stdio.h>
+#include<stdlib.h>
 #include<string.h>	//strlen
 #include<sys/socket.h>
 #include<arpa/inet.h>	//inet_addr
 #include<unistd.h>	//write
 #define PORT 8080
 
+#include "../../armcommlib/armcommlib.h"
+
 int main(int argc , char *argv[])
 {
 	int socket_desc , client_sock , c , read_size;
 	struct sockaddr_in server , client;
-	char client_message[2000], message[1024];
+	char client_message[1024], message[1024];
 	char *client_ip;
 
+        uint8_t *enc_message, *dec_message, *hash;
+        uint8_t key[16] = {0x10, 0xa5, 0x88, 0x69, 0xd7, 0x4b, 0xe5, 0xa3, 0x74, 0xcf, 0x86, 0x7c, 0xfb, 0x47, 0x38, 0x59};
+        int size, i;
+
 	//Create socket
+
 	socket_desc = socket(AF_INET , SOCK_STREAM , 0);
 	if (socket_desc == -1)
 	{
@@ -56,11 +64,29 @@ int main(int argc , char *argv[])
 	//Receive a message from client
 	while( read_size > 0 || client_message != "exit" )
 	{
-		read_size = recv(client_sock , client_message , 2000 , 0);
-		printf("%s : %s\n",client_ip, client_message);
+		read_size = recv(client_sock , client_message , 1024 , 0);
+
+                printf("\nMessage size: %u\n",read_size);
+
+                enc_message = (uint8_t *)malloc(size*sizeof(uint8_t));
+                dec_message = (uint8_t *)malloc(size*sizeof(uint8_t));
+
+
+                decrypt(client_message,&dec_message,0,read_size,key,hash);
+
+                printf("%s :\n",client_ip);
+
+                for( i=0; i<read_size; i++) {
+                    printf("%c", dec_message[i]);
+                }
+                printf("\n");
+
 		printf("Enter message: ");
-		scanf("%s", message);
-		write(client_sock , message , strlen(client_message));
+		gets(message);
+                size = strlen(message);
+                encrypt(message,&enc_message,0,size,key,hash);
+
+		write(client_sock , enc_message , strlen(client_message));
 
 		if(read_size == -1 || read_size == 0)
 		{
