@@ -59,17 +59,6 @@ int main(int argc , char *argv[])
 
                 encrypt(message,&enc_message,0,size,key,&hash);
 
-                /*
-                size = strlen(enc_message);
-
-                printf("ENC %u: ",size);
-
-                for( i=0; i<size; i++) {
-                    printf("%02x", enc_message[i]);
-                }
-                printf("\n");
-                */
-
 		//Send message
 		if( send(sock , enc_message , size , 0) < 0)
 		{

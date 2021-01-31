@@ -18,13 +18,11 @@
 void en_aes_cbc_sha1(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key, uint8_t **hash)
 {
     uint64_t block_byte_length = 16;
-//    uint8_t *auth;
     uint8_t iv[16] = {0};
     uint8_t key_expanded[256] = {0};
 
     armv8_cipher_digest_t arg;
 
-//    auth = (uint8_t *)malloc(block_byte_length);
 
     arg.digest.hmac.key = key;
     arg.digest.hmac.i_key_pad = key;
@@ -41,20 +39,17 @@ void en_aes_cbc_sha1(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_
                 enc_val, *cipher_output, block_byte_length,
                 enc_val, *hash, block_byte_length,
                 &arg);
-//    free(auth);
 }
 
 
 void en_aes_cbc_sha256(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key, uint8_t **hash)
 {
     uint64_t block_byte_length = 16;
-//    uint8_t *auth;
     uint8_t iv[16] = {0};
     uint8_t key_expanded[256] = {0};
 
     armv8_cipher_digest_t arg;
 
-//    auth = (uint8_t *)malloc(block_byte_length);
 
     arg.digest.hmac.key = key;
     arg.digest.hmac.i_key_pad = key;
@@ -71,7 +66,6 @@ void en_aes_cbc_sha256(uint8_t *enc_val, uint8_t **cipher_output, int size, uint
                 enc_val, *cipher_output, block_byte_length,
                 enc_val, *hash, block_byte_length,
                 &arg);
-//    free(auth);
 }
 
 void en_aes_gcm_state(uint8_t *enc_val, uint8_t **cipher_output, int size, uint8_t *key, uint8_t **hash)

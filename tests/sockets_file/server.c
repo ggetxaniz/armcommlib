@@ -11,18 +11,15 @@
 
 int main(int argc , char *argv[])
 {
-	int socket_desc , client_sock , c , read_size;
+	int socket_desc , client_sock , c , read_size, i;
 	struct sockaddr_in server , client;
-	char *client_ip, file_name[20];
+	char *client_ip;
 
         uint8_t *enc_buffer, *dec_result, *hash;
         uint8_t key[16] = {0x10, 0xa5, 0x88, 0x69, 0xd7, 0x4b, 0xe5, 0xa3, 0x74, 0xcf, 0x86, 0x7c, 0xfb, 0x47, 0x38, 0x59};
-        int size, i;
-	char size_aux[4];
+        uint32_t size, size_aux;
 
         hash = (uint8_t *)malloc(16*sizeof(uint8_t));
-
-        strncpy(file_name, argv[1], strlen(argv[1]));
 
 	//Create socket
 
@@ -66,15 +63,13 @@ int main(int argc , char *argv[])
 	client_ip = inet_ntoa(client.sin_addr);
 
 	//Receive a message from client
-	if (read_size = recv(client_sock , size_aux , sizeof(int) , 0) <= 0){
+	if (read_size = recv(client_sock , &size_aux , sizeof(size_aux) , 0) <= 0){
 		perror("recv failed");
 		puts("Client disconnected");
 		return 0;
 	}
 
-        memcpy(&size, size_aux, sizeof(size));
-
-        printf("\n %u",size);
+	size = ntohl(size_aux);
 
         enc_buffer = (uint8_t *)malloc(size*sizeof(uint8_t));
 
@@ -84,11 +79,13 @@ int main(int argc , char *argv[])
                 return 0;
         }
 
+        read_size = recv(client_sock , enc_buffer , size , 0);
+
         dec_result = (uint8_t *)malloc(size*sizeof(uint8_t));
 
-        decrypt(dec_result,&enc_buffer,0,read_size,key,&hash);
+        decrypt(enc_buffer,&dec_result,0,size,key,&hash);
 
-        FILE *file = fopen(file_name, "w");
+        FILE *file = fopen(argv[1], "w");
 
         if (file == NULL){
                 exit(1);
@@ -98,7 +95,7 @@ int main(int argc , char *argv[])
         }
 
         printf("%s :\n",client_ip);
-        printf("%s decrypted",file_name);
+        printf("%s decrypted\n",argv[1]);
 
 	fflush(stdout);
 	close(client_sock);
