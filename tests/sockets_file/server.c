@@ -13,13 +13,16 @@ int main(int argc , char *argv[])
 {
 	int socket_desc , client_sock , c , read_size;
 	struct sockaddr_in server , client;
-	char *client_ip;
+	char *client_ip, file_name[20];
 
-        uint8_t enc_file[1000], *dec_file, *hash;
+        uint8_t *enc_buffer, *dec_result, *hash;
         uint8_t key[16] = {0x10, 0xa5, 0x88, 0x69, 0xd7, 0x4b, 0xe5, 0xa3, 0x74, 0xcf, 0x86, 0x7c, 0xfb, 0x47, 0x38, 0x59};
         int size, i;
+	char size_aux[4];
 
         hash = (uint8_t *)malloc(16*sizeof(uint8_t));
+
+        strncpy(file_name, argv[1], strlen(argv[1]));
 
 	//Create socket
 
@@ -63,18 +66,39 @@ int main(int argc , char *argv[])
 	client_ip = inet_ntoa(client.sin_addr);
 
 	//Receive a message from client
-	if (read_size = recv(client_sock , enc_file , 1024 , 0) <= 0){
+	if (read_size = recv(client_sock , size_aux , sizeof(int) , 0) <= 0){
 		perror("recv failed");
 		puts("Client disconnected");
 		return 0;
 	}
-// COMO RESERVAS MEM SINO SABES CUANTO VAS A RECIBIR ??
-        dec_file = (uint8_t *)malloc(read_size*sizeof(uint8_t));
 
-        decrypt(enc_file,&dec_file,0,read_size,key,&hash);
+        memcpy(&size, size_aux, sizeof(size));
+
+        printf("\n %u",size);
+
+        enc_buffer = (uint8_t *)malloc(size*sizeof(uint8_t));
+
+        if (read_size = recv(client_sock , enc_buffer , size , 0) <= 0){
+                perror("recv failed");
+                puts("Client disconnected");
+                return 0;
+        }
+
+        dec_result = (uint8_t *)malloc(size*sizeof(uint8_t));
+
+        decrypt(dec_result,&enc_buffer,0,read_size,key,&hash);
+
+        FILE *file = fopen(file_name, "w");
+
+        if (file == NULL){
+                exit(1);
+        }else{
+                fseek (file, 0, SEEK_SET);
+		fwrite(dec_result, sizeof(uint8_t),size, file);
+        }
 
         printf("%s :\n",client_ip);
-        printf("File decrypted");
+        printf("%s decrypted",file_name);
 
 	fflush(stdout);
 	close(client_sock);

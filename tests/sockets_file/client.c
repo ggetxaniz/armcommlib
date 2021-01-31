@@ -15,11 +15,14 @@ int main(int argc , char *argv[])
 	struct sockaddr_in server;
 	char file_name[20];
 
-        uint8_t *enc_file, *hash;
+        uint8_t *hash, *buffer, *enc_result;
         uint8_t key[16] = {0x10, 0xa5, 0x88, 0x69, 0xd7, 0x4b, 0xe5, 0xa3, 0x74, 0xcf, 0x86, 0x7c, 0xfb, 0x47, 0x38, 0x59};
         int size, i;
+        char size_aux[4];
 
         hash = (uint8_t *)malloc(16*sizeof(uint8_t));
+
+        strncpy(file_name, argv[1], strlen(argv[1]));
 
 	//Create socket
 	sock = socket(AF_INET , SOCK_STREAM , 0);
@@ -43,8 +46,7 @@ int main(int argc , char *argv[])
 	puts("Connected\n");
 
 	//Communicate with server
-	printf("Enter name of file: ");
-	gets(file_name);
+	printf("Send file %s", file_name);
 
 	FILE *file = fopen(file_name, "r");
 
@@ -53,18 +55,33 @@ int main(int argc , char *argv[])
         }else{
     		fseek (file, 0, SEEK_END);
         	size = ftell (file);
-	}
+		fseek (file, 0, SEEK_SET);
+        	buffer = (uint8_t *)malloc (size*sizeof(uint8_t));
 
-        enc_file = (uint8_t *)malloc(size*sizeof(uint8_t));
+		if(buffer){
+          		fread(buffer, sizeof(uint8_t), size, file);
+        	}
 
-	if (strncmp(file_name, "exit", 4) == 0) return 0;
-        encrypt(file_name,&enc_file,0,size,key,&hash);
+	        enc_result = (uint8_t *)malloc(size*sizeof(uint8_t));
 
-	//Send message
-	if( send(sock , enc_file , size , 0) < 0)
-	{
-		puts("Send failed");
-		return 1;
+		encrypt(buffer,&enc_result,0,size,key,&hash);
+
+                memcpy(size_aux, &size, sizeof(size));
+
+                //Send message
+                if( send(sock , (const char*)size_aux, 4, 0) < 0)
+                {
+                        puts("Send failed");
+                        return 1;
+                }
+
+
+		//Send message
+		if( send(sock , enc_result , size , 0) < 0)
+		{
+			puts("Send failed");
+			return 1;
+		}
 	}
 
 	close(sock);

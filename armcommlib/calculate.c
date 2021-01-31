@@ -10,7 +10,7 @@
 
 static inline uint64_t get_info(void)
 {
-	int info;
+	uint64_t info;
 	asm("MRS %[result], ID_AA64ISAR0_EL1": [result] "=r" (info));
 	return info;
 }
@@ -166,16 +166,16 @@ uint8_t decrypt(uint8_t *enc_message, uint8_t **dec_result, int mode, int size, 
     return (1);
 }
 
-void encrypt_file(uint8_t *plain_file, uint8_t** enc_result, int mode, uint8_t *key, uint8_t **hash){
+void encrypt_file(uint8_t *plain_file, int mode, uint8_t *key){
 
     void (*aes_encrypt)(uint8_t*, uint8_t**, int, uint8_t*, uint8_t**);
 
-    uint64_t reg_info = 0;
+//    uint64_t reg_info = 0;
 
-    if (reg_info != 69920){
-        printf("This system does not support AES and SHA functios.");
-        return;
-    }
+//    if (reg_info != 69920){
+//        printf("This system does not support AES and SHA functios.");
+//        return;
+//    }
 
 
 // Mode election
@@ -202,6 +202,10 @@ void encrypt_file(uint8_t *plain_file, uint8_t** enc_result, int mode, uint8_t *
     uint8_t *aux_result;
     uint64_t block;
     uint8_t *buffer = 0;
+    uint8_t *hash;
+
+    hash = (uint8_t *)malloc(16*sizeof(uint8_t));
+
 
 // Block quantityy
 
@@ -217,6 +221,7 @@ void encrypt_file(uint8_t *plain_file, uint8_t** enc_result, int mode, uint8_t *
 
         if(buffer){
             fread(buffer, sizeof(uint8_t), size, file);
+	    fseek (file, 0, SEEK_SET);
         }
 
         block = 1;
@@ -238,12 +243,12 @@ void encrypt_file(uint8_t *plain_file, uint8_t** enc_result, int mode, uint8_t *
 
         while(i<block){
             aux=&aux_result[i*16];
-            aes_encrypt(&text[i*16], &aux, size, key, hash);
+            aes_encrypt(&text[i*16], &aux, size, key, &hash);
             i++;
     	}
 
-    	memcpy(*enc_result, aux_result, size);
-        fprintf(file, "%02x", *aux_result);
+//    	memcpy(*enc_result, aux_result, size);
+        fwrite(aux_result, sizeof(uint8_t),size, file);
         free(aux_result);
     	free(text);
     }
@@ -251,16 +256,16 @@ void encrypt_file(uint8_t *plain_file, uint8_t** enc_result, int mode, uint8_t *
 }
 
 
-void decrypt_file(uint8_t *enc_file, uint8_t **dec_result, int mode, uint8_t *key, uint8_t **hash){
+void decrypt_file(uint8_t *enc_file, int mode, uint8_t *key){
 
     void (*aes_decrypt)(uint8_t*, uint8_t**, int, uint8_t*, uint8_t**);
 
-    uint64_t reg_info = 0;
+//    uint64_t reg_info = 0;
 
-    if (reg_info != 69920){
-        printf("This system does not support AES and SHA functios.");
-        return;
-    }
+//    if (reg_info != 69920){
+//        printf("This system does not support AES and SHA functios.");
+//        return;
+//    }
 
 // Mode election
 
@@ -288,10 +293,13 @@ void decrypt_file(uint8_t *enc_file, uint8_t **dec_result, int mode, uint8_t *ke
     uint8_t *aux_result;
     uint64_t block;
     uint8_t *buffer = 0;
+    uint8_t *hash;
+
+    hash = (uint8_t *)malloc(16*sizeof(uint8_t));
 
 // Block quantityy
 
-    FILE *file = fopen(enc_file, "w+");
+    FILE *file = fopen(enc_file, "r+");
 
     if (file == NULL){
         exit(1);
@@ -303,6 +311,7 @@ void decrypt_file(uint8_t *enc_file, uint8_t **dec_result, int mode, uint8_t *ke
 
         if(buffer){
             fread(buffer, sizeof(uint8_t), size, file);
+            fseek (file, 0, SEEK_SET);
         }
 
    	block = 1;
@@ -324,12 +333,12 @@ void decrypt_file(uint8_t *enc_file, uint8_t **dec_result, int mode, uint8_t *ke
 
     	while(i<block){
             aux=&aux_result[i*16];
-            aes_decrypt(&enc_text[i*16], &aux, size, key, hash);
+            aes_decrypt(&enc_text[i*16], &aux, size, key, &hash);
             i++;
     	}
 
-    	memcpy(*dec_result, aux_result, size);
-       	fprintf(file, "%c", *aux_result);
+//    	memcpy(*dec_result, aux_result, size);
+        fwrite(aux_result, sizeof(uint8_t),size, file);
     	free(aux_result);
     	free(enc_text);
     }
