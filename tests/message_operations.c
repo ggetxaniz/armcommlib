@@ -28,7 +28,7 @@ int main()
 
       // Mode is 0 = aes_cbc_sha1, 1 = aes_cbc_sha256, 2 = aes_gcm
 
-      encrypt(message,&enc_result,0,size,key,&hash);
+      encrypt(message,&enc_result,2,size,key,&hash);
 
       printf("\nEncryption: ");
       for( i=0; i<size; i++) {
@@ -48,7 +48,7 @@ int main()
 
       // Mode is 0 = aes_cbc_sha1, 1 = aes_cbc_sha256, 2 = aes_gcm
 
-      decrypt(enc_result,&dec_result,0,size,key,&hash);
+      decrypt(enc_result,&dec_result,2,size,key,&hash);
 
       printf("\nDecryption: ");
       for( i=0; i<size; i++) {

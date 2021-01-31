@@ -8,6 +8,8 @@
 
 #include "armcommlib.h"
 
+#define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
+
 static inline uint64_t get_info(void)
 {
 	uint64_t info;
@@ -15,24 +17,37 @@ static inline uint64_t get_info(void)
 	return info;
 }
 
+void check_crypto(void)
+{
+    uint64_t reg_info = get_info();
+
+    if (CHECK_BIT(reg_info,2)){
+        printf("This system does not support AES and SHA functios.");
+	exit(0);
+    }
+    if (CHECK_BIT(reg_info,3)){
+        printf("This system does not support AES and SHA functios.");
+	exit(0);
+    }
+    if (CHECK_BIT(reg_info,4)){
+        printf("This system does not support AES and SHA functios.");
+	exit(0);
+    }
+}
+
 uint8_t encrypt(uint8_t *message, uint8_t** enc_result, int mode, int size, uint8_t *key, uint8_t **hash){
 
     void (*aes_encrypt)(uint8_t*, uint8_t**, int, uint8_t*, uint8_t**);
 
-    uint64_t reg_info = 0;
-
-//    if (reg_info != 69920){
-//        printf("This system does not support AES and SHA functios.");
-//        return(0);
-//    }
+    check_crypto();
 
 // Mode election
 
     if (size == 0){
-	return(0);
+	exit(0);
     }
     if (mode < 0 || mode > 2){
-        return(0);
+        exit(0);
     }else{
 	switch (mode) {
             case 0:
@@ -89,13 +104,7 @@ uint8_t decrypt(uint8_t *enc_message, uint8_t **dec_result, int mode, int size, 
 
     void (*aes_decrypt)(uint8_t*, uint8_t**, int, uint8_t*, uint8_t**);
 
-    uint64_t reg_info = 0;
-
-//    if (reg_info != 69920){
-//        printf("This system does not support AES and SHA functios.");
-//        return(0);
-//    }
-
+    check_crypto();
 
 // Mode election
 
@@ -160,13 +169,7 @@ void encrypt_file(uint8_t *plain_file, int mode, uint8_t *key){
 
     void (*aes_encrypt)(uint8_t*, uint8_t**, int, uint8_t*, uint8_t**);
 
-//    uint64_t reg_info = 0;
-
-//    if (reg_info != 69920){
-//        printf("This system does not support AES and SHA functios.");
-//        return;
-//    }
-
+    check_crypto();
 
 // Mode election
     if (mode < 0 || mode > 2){
@@ -252,12 +255,7 @@ void decrypt_file(uint8_t *enc_file, int mode, uint8_t *key){
 
     void (*aes_decrypt)(uint8_t*, uint8_t**, int, uint8_t*, uint8_t**);
 
-//    uint64_t reg_info = 0;
-
-//    if (reg_info != 69920){
-//        printf("This system does not support AES and SHA functios.");
-//        return;
-//    }
+    check_crypto();
 
 // Mode election
 
